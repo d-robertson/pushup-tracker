@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Header } from "@/components/layouts/header";
 import { QuickAdd } from "@/components/pushups/quick-add";
 import { StatsCards } from "@/components/pushups/stats-cards";
+import { Leaderboard } from "@/components/pushups/leaderboard";
 import { useToast } from "@/components/ui/use-toast";
 
 export default function DashboardPage() {
@@ -91,12 +92,10 @@ function DashboardContent() {
           {/* Stats Cards */}
           <StatsCards stats={stats} loading={loading} />
 
-          {/* Quick Add */}
+          {/* Quick Add and Leaderboard */}
           <div className="grid gap-6 lg:grid-cols-2">
             <QuickAdd todayCount={todayCount} onPushupsAdded={handlePushupsAdded} />
-
-            {/* Placeholder for future components */}
-            <div className="space-y-6">{/* We can add history/calendar here later */}</div>
+            <Leaderboard />
           </div>
         </div>
       </main>

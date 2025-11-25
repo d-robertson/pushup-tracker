@@ -353,6 +353,21 @@ export interface Database {
           average_per_day: number;
         };
       };
+      get_leaderboard: {
+        Args: Record<string, never>;
+        Returns: {
+          user_id: string;
+          display_name: string | null;
+          email: string | null;
+          device_name: string | null;
+          total_pushups: number;
+          current_streak: number;
+          today_pushups: number;
+          week_pushups: number;
+          month_pushups: number;
+          days_active: number;
+        }[];
+      };
     };
     Enums: {
       [_ in never]: never;
