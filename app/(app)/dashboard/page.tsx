@@ -78,18 +78,18 @@ function DashboardContent() {
   };
 
   return (
-    <div className="flex flex-col h-screen w-full overflow-hidden">
-      <Tabs defaultValue="add" className="flex flex-col h-full w-full">
+    <div className="h-screen w-full flex flex-col bg-background">
+      <Tabs defaultValue="add" className="h-full w-full flex flex-col">
         {/* Main Content Area */}
-        <div className="flex-1 overflow-y-auto pb-20">
+        <div className="flex-1 overflow-y-auto">
           <TabsContent value="add" className="h-full m-0 p-0">
-            <div className="container max-w-2xl py-6 px-4">
+            <div className="container max-w-2xl py-6 px-4 pb-24">
               <QuickAdd todayCount={todayCount} onPushupsAdded={handlePushupsAdded} />
             </div>
           </TabsContent>
 
           <TabsContent value="stats" className="h-full m-0 p-0">
-            <div className="container max-w-2xl py-6 px-4">
+            <div className="container max-w-2xl py-6 px-4 pb-24">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold">Your Stats</h2>
                 <p className="text-muted-foreground">Track your progress over time</p>
@@ -99,32 +99,32 @@ function DashboardContent() {
           </TabsContent>
 
           <TabsContent value="leaderboard" className="h-full m-0 p-0">
-            <div className="container max-w-2xl py-6 px-4">
+            <div className="container max-w-2xl py-6 px-4 pb-24">
               <Leaderboard />
             </div>
           </TabsContent>
         </div>
 
-        {/* Bottom Navigation Bar */}
-        <div className="flex-shrink-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <TabsList className="w-full h-16 flex flex-row justify-around items-stretch bg-transparent p-0 rounded-none">
+        {/* Bottom Navigation Bar - Fixed */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-white dark:bg-gray-950 shadow-lg">
+          <TabsList className="w-full h-20 flex flex-row items-stretch justify-evenly bg-transparent p-0 m-0 rounded-none border-0">
             <TabsTrigger
               value="add"
-              className="flex-1 flex flex-col items-center justify-center gap-1 rounded-none border-0 data-[state=active]:bg-primary/10"
+              className="flex-1 flex flex-col items-center justify-center gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-900 data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-950 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 transition-colors"
             >
               <PlusCircle className="h-6 w-6" />
               <span className="text-xs font-medium">Add</span>
             </TabsTrigger>
             <TabsTrigger
               value="stats"
-              className="flex-1 flex flex-col items-center justify-center gap-1 rounded-none border-0 data-[state=active]:bg-primary/10"
+              className="flex-1 flex flex-col items-center justify-center gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-900 data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-950 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 transition-colors"
             >
               <BarChart3 className="h-6 w-6" />
               <span className="text-xs font-medium">Stats</span>
             </TabsTrigger>
             <TabsTrigger
               value="leaderboard"
-              className="flex-1 flex flex-col items-center justify-center gap-1 rounded-none border-0 data-[state=active]:bg-primary/10"
+              className="flex-1 flex flex-col items-center justify-center gap-1.5 rounded-none border-0 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-900 data-[state=active]:bg-blue-50 dark:data-[state=active]:bg-blue-950 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 transition-colors"
             >
               <Trophy className="h-6 w-6" />
               <span className="text-xs font-medium">Leaders</span>
