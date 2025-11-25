@@ -8,7 +8,9 @@ import { Header } from "@/components/layouts/header";
 import { QuickAdd } from "@/components/pushups/quick-add";
 import { StatsCards } from "@/components/pushups/stats-cards";
 import { Leaderboard } from "@/components/pushups/leaderboard";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
+import { PlusCircle, BarChart3, Trophy } from "lucide-react";
 
 export default function DashboardPage() {
   return (
@@ -33,8 +35,6 @@ function DashboardContent() {
     average_per_day: number;
   } | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const displayName = profile?.display_name || profile?.email || profile?.device_name || "User";
 
   const fetchData = async () => {
     if (!profile) return;
@@ -81,23 +81,58 @@ function DashboardContent() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 container py-8">
-        <div className="max-w-6xl mx-auto space-y-8">
-          {/* Header */}
-          <div>
-            <h1 className="text-4xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground mt-2">Welcome back, {displayName}!</p>
+      <main className="flex-1 flex flex-col">
+        <Tabs defaultValue="add" className="flex-1 flex flex-col">
+          {/* Tab Content */}
+          <div className="flex-1 overflow-auto pb-20">
+            <TabsContent value="add" className="mt-0 h-full">
+              <div className="container max-w-2xl py-6">
+                <QuickAdd todayCount={todayCount} onPushupsAdded={handlePushupsAdded} />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="stats" className="mt-0 h-full">
+              <div className="container max-w-2xl py-6">
+                <div className="mb-6">
+                  <h2 className="text-2xl font-bold">Your Stats</h2>
+                  <p className="text-muted-foreground">Track your progress over time</p>
+                </div>
+                <StatsCards stats={stats} loading={loading} />
+              </div>
+            </TabsContent>
+
+            <TabsContent value="leaderboard" className="mt-0 h-full">
+              <div className="container max-w-2xl py-6">
+                <Leaderboard />
+              </div>
+            </TabsContent>
           </div>
 
-          {/* Stats Cards */}
-          <StatsCards stats={stats} loading={loading} />
-
-          {/* Quick Add and Leaderboard */}
-          <div className="grid gap-6 lg:grid-cols-2">
-            <QuickAdd todayCount={todayCount} onPushupsAdded={handlePushupsAdded} />
-            <Leaderboard />
-          </div>
-        </div>
+          {/* Bottom Tab Navigation */}
+          <TabsList className="fixed bottom-0 left-0 right-0 h-16 w-full rounded-none border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 grid grid-cols-3">
+            <TabsTrigger
+              value="add"
+              className="flex-col gap-1 h-full data-[state=active]:bg-primary/10"
+            >
+              <PlusCircle className="h-5 w-5" />
+              <span className="text-xs">Add</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="stats"
+              className="flex-col gap-1 h-full data-[state=active]:bg-primary/10"
+            >
+              <BarChart3 className="h-5 w-5" />
+              <span className="text-xs">Stats</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="leaderboard"
+              className="flex-col gap-1 h-full data-[state=active]:bg-primary/10"
+            >
+              <Trophy className="h-5 w-5" />
+              <span className="text-xs">Leaders</span>
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
       </main>
     </div>
   );
