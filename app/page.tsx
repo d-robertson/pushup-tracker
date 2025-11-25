@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -42,14 +43,16 @@ export default function Home() {
               </div>
             </CardContent>
             <CardFooter className="flex gap-2">
-              <Button className="flex-1">Get Started</Button>
-              <Button variant="outline" className="flex-1">
-                Learn More
+              <Button className="flex-1" asChild>
+                <Link href="/dashboard">Get Started</Link>
+              </Button>
+              <Button variant="outline" className="flex-1" asChild>
+                <Link href="#features">Learn More</Link>
               </Button>
             </CardFooter>
           </Card>
 
-          <Card>
+          <Card id="features">
             <CardHeader>
               <CardTitle>Features</CardTitle>
               <CardDescription>Everything you need to stay on track</CardDescription>
