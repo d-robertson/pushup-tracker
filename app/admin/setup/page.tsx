@@ -58,10 +58,10 @@ export default function AdminSetupPage() {
     checkForAdmins();
   }, [supabase]);
 
-  // If already authenticated as admin, redirect to admin panel
+  // If already authenticated as admin, redirect to dashboard
   useEffect(() => {
     if (!checkingAdmins && authenticated && isAdmin) {
-      router.push("/admin");
+      router.push("/dashboard");
     }
   }, [authenticated, isAdmin, checkingAdmins, router]);
 
@@ -116,9 +116,9 @@ export default function AdminSetupPage() {
       // Refresh profile to authenticate
       await refreshProfile();
 
-      // Redirect to admin panel
+      // Redirect to dashboard
       setTimeout(() => {
-        router.push("/admin");
+        router.push("/dashboard");
       }, 1000);
     } catch (error) {
       console.error("Error in admin setup:", error);
