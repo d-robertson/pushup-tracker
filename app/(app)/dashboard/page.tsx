@@ -81,17 +81,23 @@ function DashboardContent() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 flex flex-col">
+      <main className="flex-1 flex flex-col overflow-hidden">
         <Tabs defaultValue="add" className="flex-1 flex flex-col">
           {/* Tab Content */}
           <div className="flex-1 overflow-auto pb-20">
-            <TabsContent value="add" className="mt-0 h-full">
+            <TabsContent
+              value="add"
+              className="mt-0 h-full data-[state=active]:flex data-[state=active]:flex-col"
+            >
               <div className="container max-w-2xl py-6">
                 <QuickAdd todayCount={todayCount} onPushupsAdded={handlePushupsAdded} />
               </div>
             </TabsContent>
 
-            <TabsContent value="stats" className="mt-0 h-full">
+            <TabsContent
+              value="stats"
+              className="mt-0 h-full data-[state=active]:flex data-[state=active]:flex-col"
+            >
               <div className="container max-w-2xl py-6">
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold">Your Stats</h2>
@@ -101,7 +107,10 @@ function DashboardContent() {
               </div>
             </TabsContent>
 
-            <TabsContent value="leaderboard" className="mt-0 h-full">
+            <TabsContent
+              value="leaderboard"
+              className="mt-0 h-full data-[state=active]:flex data-[state=active]:flex-col"
+            >
               <div className="container max-w-2xl py-6">
                 <Leaderboard />
               </div>
@@ -109,29 +118,31 @@ function DashboardContent() {
           </div>
 
           {/* Bottom Tab Navigation */}
-          <TabsList className="fixed bottom-0 left-0 right-0 h-16 w-full rounded-none border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 grid grid-cols-3">
-            <TabsTrigger
-              value="add"
-              className="flex-col gap-1 h-full data-[state=active]:bg-primary/10"
-            >
-              <PlusCircle className="h-5 w-5" />
-              <span className="text-xs">Add</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="stats"
-              className="flex-col gap-1 h-full data-[state=active]:bg-primary/10"
-            >
-              <BarChart3 className="h-5 w-5" />
-              <span className="text-xs">Stats</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="leaderboard"
-              className="flex-col gap-1 h-full data-[state=active]:bg-primary/10"
-            >
-              <Trophy className="h-5 w-5" />
-              <span className="text-xs">Leaders</span>
-            </TabsTrigger>
-          </TabsList>
+          <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background">
+            <TabsList className="w-full h-16 rounded-none bg-transparent p-0 grid grid-cols-3">
+              <TabsTrigger
+                value="add"
+                className="flex flex-col items-center justify-center gap-1 h-full rounded-none data-[state=active]:bg-primary/10 data-[state=active]:shadow-none"
+              >
+                <PlusCircle className="h-5 w-5" />
+                <span className="text-xs">Add</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="stats"
+                className="flex flex-col items-center justify-center gap-1 h-full rounded-none data-[state=active]:bg-primary/10 data-[state=active]:shadow-none"
+              >
+                <BarChart3 className="h-5 w-5" />
+                <span className="text-xs">Stats</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="leaderboard"
+                className="flex flex-col items-center justify-center gap-1 h-full rounded-none data-[state=active]:bg-primary/10 data-[state=active]:shadow-none"
+              >
+                <Trophy className="h-5 w-5" />
+                <span className="text-xs">Leaders</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
         </Tabs>
       </main>
     </div>
