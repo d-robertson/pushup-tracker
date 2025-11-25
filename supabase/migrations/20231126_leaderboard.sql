@@ -49,35 +49,35 @@ BEGIN
         COALESCE(
             (
                 SELECT SUM(count)
-                FROM public.pushup_entries
-                WHERE user_id = p.id
-                  AND entry_date = CURRENT_DATE
+                FROM public.pushup_entries pe_today
+                WHERE pe_today.user_id = p.id
+                  AND pe_today.entry_date = CURRENT_DATE
             ),
             0
         ) AS today_pushups,
         COALESCE(
             (
                 SELECT SUM(count)
-                FROM public.pushup_entries
-                WHERE user_id = p.id
-                  AND entry_date >= CURRENT_DATE - INTERVAL '7 days'
+                FROM public.pushup_entries pe_week
+                WHERE pe_week.user_id = p.id
+                  AND pe_week.entry_date >= CURRENT_DATE - INTERVAL '7 days'
             ),
             0
         ) AS week_pushups,
         COALESCE(
             (
                 SELECT SUM(count)
-                FROM public.pushup_entries
-                WHERE user_id = p.id
-                  AND entry_date >= CURRENT_DATE - INTERVAL '30 days'
+                FROM public.pushup_entries pe_month
+                WHERE pe_month.user_id = p.id
+                  AND pe_month.entry_date >= CURRENT_DATE - INTERVAL '30 days'
             ),
             0
         ) AS month_pushups,
         COALESCE(
             (
                 SELECT COUNT(DISTINCT entry_date)
-                FROM public.pushup_entries
-                WHERE user_id = p.id
+                FROM public.pushup_entries pe_days
+                WHERE pe_days.user_id = p.id
             ),
             0
         ) AS days_active
