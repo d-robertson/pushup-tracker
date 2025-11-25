@@ -308,6 +308,51 @@ export interface Database {
           created_at: string;
         }[];
       };
+      add_pushups: {
+        Args: {
+          p_user_id: string;
+          p_count: number;
+          p_notes?: string | null;
+        };
+        Returns: {
+          entry_id: string;
+          entry_date: string;
+          total_count: number;
+          added_count: number;
+        };
+      };
+      get_todays_pushups: {
+        Args: {
+          p_user_id: string;
+        };
+        Returns: number;
+      };
+      get_pushup_history: {
+        Args: {
+          p_user_id: string;
+          p_days?: number;
+        };
+        Returns: {
+          entry_date: string;
+          count: number;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        }[];
+      };
+      get_user_pushup_stats: {
+        Args: {
+          p_user_id: string;
+        };
+        Returns: {
+          total_pushups: number;
+          today_count: number;
+          current_streak: number;
+          longest_streak: number;
+          days_active: number;
+          average_per_day: number;
+        };
+      };
     };
     Enums: {
       [_ in never]: never;

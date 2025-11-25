@@ -1,10 +1,13 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { useAuth } from "@/lib/auth/auth-context";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
 import { Header } from "@/components/layouts/header";
+import { QuickAdd } from "@/components/pushups/quick-add";
+import { StatsCards } from "@/components/pushups/stats-cards";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function DashboardPage() {
   return (
@@ -15,90 +18,85 @@ export default function DashboardPage() {
 }
 
 function DashboardContent() {
-  const { profile, deviceId } = useAuth();
+  const { profile } = useAuth();
+  const { toast } = useToast();
+  const supabase = createClient();
+
+  const [todayCount, setTodayCount] = useState(0);
+  const [stats, setStats] = useState<{
+    total_pushups: number;
+    today_count: number;
+    current_streak: number;
+    longest_streak: number;
+    days_active: number;
+    average_per_day: number;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const displayName = profile?.display_name || profile?.email || profile?.device_name || "User";
+
+  const fetchData = async () => {
+    if (!profile) return;
+
+    try {
+      // Fetch today's count
+      // @ts-expect-error - RPC function types
+      const { data: todayData, error: todayError } = await supabase.rpc("get_todays_pushups", {
+        p_user_id: profile.id,
+      });
+
+      if (todayError) throw todayError;
+      setTodayCount(todayData || 0);
+
+      // Fetch stats
+      // @ts-expect-error - RPC function types
+      const { data: statsData, error: statsError } = await supabase.rpc("get_user_pushup_stats", {
+        p_user_id: profile.id,
+      });
+
+      if (statsError) throw statsError;
+      setStats(statsData);
+    } catch (error) {
+      console.error("Error fetching pushup data:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to load pushup data",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [profile]);
+
+  const handlePushupsAdded = () => {
+    // Refresh data after adding pushups
+    fetchData();
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 container py-8">
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="max-w-6xl mx-auto space-y-8">
+          {/* Header */}
           <div>
             <h1 className="text-4xl font-bold tracking-tight">Dashboard</h1>
             <p className="text-muted-foreground mt-2">Welcome back, {displayName}!</p>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Your Profile</CardTitle>
-              <CardDescription>Account information</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {profile?.email && (
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">Email:</span>
-                    <span className="text-sm text-muted-foreground">{profile.email}</span>
-                  </div>
-                )}
-                {profile?.device_name && (
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium">Device:</span>
-                    <span className="text-sm text-muted-foreground">{profile.device_name}</span>
-                  </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium">Device ID:</span>
-                  <span className="text-sm text-muted-foreground font-mono text-xs">
-                    {deviceId?.substring(0, 32)}...
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Stats Cards */}
+          <StatsCards stats={stats} loading={loading} />
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Today's Progress</CardTitle>
-              <CardDescription>Track your pushups for today</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8">
-                <p className="text-6xl font-bold">0</p>
-                <p className="text-muted-foreground mt-2">pushups today</p>
-                <Button className="mt-4">Add Pushups</Button>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Quick Add */}
+          <div className="grid gap-6 lg:grid-cols-2">
+            <QuickAdd todayCount={todayCount} onPushupsAdded={handlePushupsAdded} />
 
-          <div className="grid gap-4 md:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Total Pushups</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">0</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Current Streak</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">0 days</p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Days Active</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">0</p>
-              </CardContent>
-            </Card>
+            {/* Placeholder for future components */}
+            <div className="space-y-6">{/* We can add history/calendar here later */}</div>
           </div>
         </div>
       </main>
