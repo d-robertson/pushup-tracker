@@ -6,9 +6,13 @@ export interface Database {
       profiles: {
         Row: {
           id: string;
-          email: string;
+          email: string | null;
           display_name: string | null;
           avatar_url: string | null;
+          device_id: string | null;
+          device_name: string | null;
+          device_fingerprint: string | null;
+          last_seen_at: string | null;
           invited_by: string | null;
           invited_at: string | null;
           onboarded_at: string | null;
@@ -18,9 +22,13 @@ export interface Database {
         };
         Insert: {
           id: string;
-          email: string;
+          email?: string | null;
           display_name?: string | null;
           avatar_url?: string | null;
+          device_id?: string | null;
+          device_name?: string | null;
+          device_fingerprint?: string | null;
+          last_seen_at?: string | null;
           invited_by?: string | null;
           invited_at?: string | null;
           onboarded_at?: string | null;
@@ -30,9 +38,13 @@ export interface Database {
         };
         Update: {
           id?: string;
-          email?: string;
+          email?: string | null;
           display_name?: string | null;
           avatar_url?: string | null;
+          device_id?: string | null;
+          device_name?: string | null;
+          device_fingerprint?: string | null;
+          last_seen_at?: string | null;
           invited_by?: string | null;
           invited_at?: string | null;
           onboarded_at?: string | null;
@@ -49,6 +61,8 @@ export interface Database {
           token: string;
           expires_at: string;
           used_at: string | null;
+          device_id: string | null;
+          device_name: string | null;
           created_at: string;
         };
         Insert: {
@@ -58,6 +72,8 @@ export interface Database {
           token: string;
           expires_at: string;
           used_at?: string | null;
+          device_id?: string | null;
+          device_name?: string | null;
           created_at?: string;
         };
         Update: {
@@ -67,6 +83,8 @@ export interface Database {
           token?: string;
           expires_at?: string;
           used_at?: string | null;
+          device_id?: string | null;
+          device_name?: string | null;
           created_at?: string;
         };
       };
@@ -266,6 +284,28 @@ export interface Database {
           current_streak: number;
           longest_streak: number;
           days_active: number;
+        }[];
+      };
+      create_device_user: {
+        Args: {
+          p_device_id: string;
+          p_device_name: string;
+          p_device_fingerprint: string;
+          p_email: string | null;
+          p_invited_by: string | null;
+        };
+        Returns: string;
+      };
+      get_user_by_device_id: {
+        Args: {
+          p_device_id: string;
+        };
+        Returns: {
+          user_id: string;
+          email: string | null;
+          device_name: string | null;
+          is_admin: boolean;
+          created_at: string;
         }[];
       };
     };

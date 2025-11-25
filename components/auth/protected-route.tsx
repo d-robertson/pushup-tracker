@@ -10,20 +10,21 @@ interface ProtectedRouteProps {
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { user, loading } = useAuth();
+  const { authenticated, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
+    if (!loading && !authenticated) {
+      // Redirect to waiting screen when not authenticated
+      router.push("/waiting");
     }
-  }, [user, loading, router]);
+  }, [authenticated, loading, router]);
 
   if (loading) {
     return <LoadingPage />;
   }
 
-  if (!user) {
+  if (!authenticated) {
     return null;
   }
 

@@ -3,42 +3,38 @@
 import Link from "next/link";
 import { useAuth } from "@/lib/auth/auth-context";
 import { Button } from "@/components/ui/button";
-import { LogOut, User } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { User, Settings } from "lucide-react";
 
 export function Header() {
-  const { user, signOut } = useAuth();
-  const router = useRouter();
+  const { profile, authenticated, isAdmin } = useAuth();
 
-  const handleSignOut = async () => {
-    await signOut();
-    router.push("/");
-  };
+  // Display name: prefer display_name, fall back to email, then device_name
+  const displayName = profile?.display_name || profile?.email || profile?.device_name || "User";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center justify-between">
-        <Link href={user ? "/dashboard" : "/"} className="flex items-center space-x-2">
+        <Link href={authenticated ? "/dashboard" : "/"} className="flex items-center space-x-2">
           <span className="font-bold">Pushup Tracker</span>
         </Link>
 
         <div className="flex items-center gap-4">
-          {user ? (
+          {authenticated && profile ? (
             <>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <User className="h-4 w-4" />
-                <span className="hidden sm:inline">{user.email}</span>
+                <span className="hidden sm:inline">{displayName}</span>
               </div>
-              <Button variant="ghost" size="sm" onClick={handleSignOut}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Sign Out
-              </Button>
+              {isAdmin && (
+                <Button variant="ghost" size="sm" asChild>
+                  <Link href="/admin">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Admin
+                  </Link>
+                </Button>
+              )}
             </>
-          ) : (
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/login">Sign In</Link>
-            </Button>
-          )}
+          ) : null}
         </div>
       </div>
     </header>

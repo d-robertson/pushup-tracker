@@ -15,7 +15,9 @@ export default function DashboardPage() {
 }
 
 function DashboardContent() {
-  const { user } = useAuth();
+  const { profile, deviceId } = useAuth();
+
+  const displayName = profile?.display_name || profile?.email || profile?.device_name || "User";
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -24,7 +26,7 @@ function DashboardContent() {
         <div className="max-w-4xl mx-auto space-y-8">
           <div>
             <h1 className="text-4xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground mt-2">Welcome back to your pushup journey!</p>
+            <p className="text-muted-foreground mt-2">Welcome back, {displayName}!</p>
           </div>
 
           <Card>
@@ -34,13 +36,23 @@ function DashboardContent() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
+                {profile?.email && (
+                  <div className="flex justify-between">
+                    <span className="text-sm font-medium">Email:</span>
+                    <span className="text-sm text-muted-foreground">{profile.email}</span>
+                  </div>
+                )}
+                {profile?.device_name && (
+                  <div className="flex justify-between">
+                    <span className="text-sm font-medium">Device:</span>
+                    <span className="text-sm text-muted-foreground">{profile.device_name}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
-                  <span className="text-sm font-medium">Email:</span>
-                  <span className="text-sm text-muted-foreground">{user?.email}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium">User ID:</span>
-                  <span className="text-sm text-muted-foreground font-mono">{user?.id}</span>
+                  <span className="text-sm font-medium">Device ID:</span>
+                  <span className="text-sm text-muted-foreground font-mono text-xs">
+                    {deviceId?.substring(0, 32)}...
+                  </span>
                 </div>
               </div>
             </CardContent>
