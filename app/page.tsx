@@ -71,7 +71,15 @@ export default function Home() {
                 </div>
               </div>
 
-              <Button className="w-full" size="lg" onClick={() => setShowRequestForm(true)}>
+              <Button
+                className="w-full"
+                size="lg"
+                onClick={() => setShowRequestForm(true)}
+                style={{
+                  backgroundColor: "#2563eb",
+                  color: "white",
+                }}
+              >
                 Request Access
               </Button>
             </CardContent>

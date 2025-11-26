@@ -15,8 +15,8 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   useEffect(() => {
     if (!loading && !authenticated) {
-      // Redirect to waiting screen when not authenticated
-      router.push("/waiting");
+      // Redirect to home page when not authenticated
+      router.push("/");
     }
   }, [authenticated, loading, router]);
 
