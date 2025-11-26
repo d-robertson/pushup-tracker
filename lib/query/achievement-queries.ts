@@ -1,8 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { createClient } from "@/lib/supabase/client";
+import { getAchievementsWithProgress, getUserAchievements } from "@/lib/supabase/rpc";
 import { checkAchievements, type AchievementToUnlock } from "../achievements/achievement-checker";
-
-const supabase = createClient();
 
 export interface Achievement {
   achievement_id: string;
@@ -24,10 +22,7 @@ export function useAchievements(userId: string | undefined) {
     queryFn: async () => {
       if (!userId) throw new Error("User ID required");
 
-      // @ts-expect-error - RPC function types
-      const { data, error } = await supabase.rpc("get_achievements_with_progress", {
-        p_user_id: userId,
-      });
+      const { data, error } = await getAchievementsWithProgress(userId);
 
       if (error) throw error;
 
@@ -47,10 +42,7 @@ export function useEarnedAchievements(userId: string | undefined) {
     queryFn: async () => {
       if (!userId) throw new Error("User ID required");
 
-      // @ts-expect-error - RPC function types
-      const { data, error } = await supabase.rpc("get_user_achievements", {
-        p_user_id: userId,
-      });
+      const { data, error } = await getUserAchievements(userId);
 
       if (error) throw error;
 

@@ -1,6 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/lib/supabase/client";
 import {
+  getProgressionHistory as getProgressionHistoryRpc,
+  createProgressionSnapshot as createProgressionSnapshotRpc,
+} from "@/lib/supabase/rpc";
+import {
   calculateProgression,
   calculateStreak,
   type UserProgress,
@@ -18,7 +22,6 @@ export function useProgression(userId: string | undefined) {
       if (!userId) throw new Error("User ID required");
 
       // Get user's pushup history
-      // @ts-expect-error - Supabase types
       const { data: entries, error: entriesError } = await supabase
         .from("pushup_entries")
         .select("entry_date, count")
@@ -28,12 +31,10 @@ export function useProgression(userId: string | undefined) {
       if (entriesError) throw entriesError;
 
       // Calculate total pushups
-      // @ts-expect-error - entries typing
       const totalPushups =
         (entries as unknown as Array<{ count: number }>)?.reduce((sum, e) => sum + e.count, 0) || 0;
 
       // Format for progression calculator
-      // @ts-expect-error - entries typing
       const formattedEntries =
         (entries as unknown as Array<{ entry_date: string; count: number }>)?.map((e) => ({
           date: e.entry_date,
@@ -71,11 +72,7 @@ export function useProgressionHistory(userId: string | undefined, days: number =
     queryFn: async () => {
       if (!userId) throw new Error("User ID required");
 
-      // @ts-expect-error - RPC function types
-      const { data, error } = await supabase.rpc("get_progression_history", {
-        p_user_id: userId,
-        p_days: days,
-      });
+      const { data, error } = await getProgressionHistoryRpc(userId, days);
 
       if (error) throw error;
 
@@ -94,11 +91,7 @@ export function useCreateProgressionSnapshot() {
 
   return useMutation({
     mutationFn: async ({ userId, date }: { userId: string; date: string }) => {
-      // @ts-expect-error - RPC function types
-      const { data, error } = await supabase.rpc("create_progression_snapshot", {
-        p_user_id: userId,
-        p_snapshot_date: date,
-      });
+      const { data, error } = await createProgressionSnapshotRpc(userId, date);
 
       if (error) throw error;
       return data;

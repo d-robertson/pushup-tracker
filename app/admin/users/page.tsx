@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/auth-context";
 import { createClient } from "@/lib/supabase/client";
+import { deleteUser } from "@/lib/supabase/rpc";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -93,9 +94,9 @@ export default function AdminUsersPage() {
     setProcessingIds((prev) => new Set(prev).add(userId));
 
     try {
-      // @ts-expect-error - Supabase types
       const { error } = await supabase
         .from("profiles")
+        // @ts-expect-error - Supabase type inference issue
         .update({ display_name: editingName.trim() })
         .eq("id", userId);
 
@@ -147,18 +148,13 @@ export default function AdminUsersPage() {
     setProcessingIds((prev) => new Set(prev).add(user.id));
 
     try {
-      // @ts-expect-error - RPC function types
-      const { data, error } = await supabase.rpc("delete_user", {
-        p_user_id: user.id,
-      });
+      const { data, error } = await deleteUser(user.id);
 
       if (error) {
         throw error;
       }
 
-      const response = data as { success: boolean; message: string };
-
-      if (response.success) {
+      if (data?.success) {
         toast({
           title: "User Deleted",
           description: `${user.display_name || user.device_name} has been removed`,
@@ -168,7 +164,7 @@ export default function AdminUsersPage() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: response.message || "Failed to delete user",
+          description: data?.message || "Failed to delete user",
         });
       }
     } catch (error) {

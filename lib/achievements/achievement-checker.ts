@@ -4,6 +4,7 @@
  */
 
 import { createClient } from "@/lib/supabase/client";
+import { awardAchievement } from "@/lib/supabase/rpc";
 
 const supabase = createClient();
 
@@ -22,7 +23,6 @@ export async function checkAchievements(userId: string): Promise<AchievementToUn
   const newlyUnlocked: AchievementToUnlock[] = [];
 
   // Get user's stats and history
-  // @ts-expect-error - Supabase types
   const { data: entries } = await supabase
     .from("pushup_entries")
     .select("entry_date, count, created_at")
@@ -31,8 +31,8 @@ export async function checkAchievements(userId: string): Promise<AchievementToUn
 
   if (!entries || entries.length === 0) return [];
 
-  // @ts-expect-error - entries typing
-  const totalPushups = entries.reduce((sum, e) => sum + e.count, 0);
+  type Entry = { entry_date: string; count: number; created_at: string };
+  const totalPushups = (entries as Entry[]).reduce((sum, e) => sum + e.count, 0);
 
   // Check milestone achievements
   const milestoneChecks = await checkMilestones(userId, totalPushups);
@@ -345,19 +345,14 @@ async function checkSpecial(
  */
 async function awardIfNew(userId: string, achievementId: string): Promise<boolean> {
   try {
-    // @ts-expect-error - RPC function types
-    const { data, error } = await supabase.rpc("award_achievement", {
-      p_user_id: userId,
-      p_achievement_id: achievementId,
-    });
+    const { data, error } = await awardAchievement(userId, achievementId);
 
     if (error) {
       console.error("Error awarding achievement:", error);
       return false;
     }
 
-    // @ts-expect-error - data typing
-    return data?.success && !data?.already_earned;
+    return !!(data?.success && !data?.already_earned);
   } catch (error) {
     console.error("Error in awardIfNew:", error);
     return false;

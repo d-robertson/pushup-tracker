@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/lib/auth/auth-context";
 import { createClient } from "@/lib/supabase/client";
+import { createDeviceUser } from "@/lib/supabase/rpc";
 import { DeviceIdService } from "@/lib/auth/device-id";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -47,32 +48,42 @@ export default function InvitePage() {
           .eq("token", token)
           .single();
 
-        if (inviteError || !invitation) {
+        type Invitation = {
+          id: string;
+          email: string;
+          invited_by: string;
+          token: string;
+          expires_at: string;
+          used_at: string | null;
+          device_id: string | null;
+          device_name: string | null;
+          created_at: string;
+        };
+
+        const typedInvitation = invitation as Invitation | null;
+
+        if (inviteError || !typedInvitation) {
           setStatus("invalid");
           setErrorMessage("Invalid invitation link");
           return;
         }
 
         // Check if already used
-        // @ts-expect-error - Types will be correct after migration
-        if (invitation.used_at) {
+        if (typedInvitation.used_at) {
           setStatus("used");
-          // @ts-expect-error - Types will be correct after migration
-          setInvitationEmail(invitation.email);
+          setInvitationEmail(typedInvitation.email);
           return;
         }
 
         // Check if expired
-        // @ts-expect-error - Types will be correct after migration
-        const expiresAt = new Date(invitation.expires_at);
+        const expiresAt = new Date(typedInvitation.expires_at);
         if (expiresAt < new Date()) {
           setStatus("expired");
           return;
         }
 
         setStatus("valid");
-        // @ts-expect-error - Types will be correct after migration
-        setInvitationEmail(invitation.email);
+        setInvitationEmail(typedInvitation.email);
 
         // Step 2: Get device ID and device info
         const currentDeviceId = deviceId || DeviceIdService.getOrCreateDeviceId();
@@ -81,15 +92,12 @@ export default function InvitePage() {
 
         // Step 3: Create device-based user
         setStatus("creating");
-        // @ts-expect-error - Types will be correct after migration
-        const { error: createError } = await supabase.rpc("create_device_user", {
-          p_device_id: currentDeviceId,
-          p_device_name: deviceInfo.name,
-          p_device_fingerprint: fingerprint,
-          // @ts-expect-error - Types will be correct after migration
-          p_email: invitation.email,
-          // @ts-expect-error - Types will be correct after migration
-          p_invited_by: invitation.invited_by,
+        const { error: createError } = await createDeviceUser({
+          deviceId: currentDeviceId,
+          deviceName: deviceInfo.name,
+          deviceFingerprint: fingerprint,
+          email: typedInvitation.email,
+          invitedBy: typedInvitation.invited_by,
         });
 
         if (createError) {
@@ -102,14 +110,13 @@ export default function InvitePage() {
         // Step 4: Mark invitation as used
         await supabase
           .from("invitations")
-          // @ts-expect-error - Types will be correct after migration
+          // @ts-expect-error - Supabase type inference issue
           .update({
             used_at: new Date().toISOString(),
             device_id: currentDeviceId,
             device_name: deviceInfo.name,
           })
-          // @ts-expect-error - Types will be correct after migration
-          .eq("id", invitation.id);
+          .eq("id", typedInvitation.id);
 
         // Step 5: Refresh profile to authenticate
         await refreshProfile();

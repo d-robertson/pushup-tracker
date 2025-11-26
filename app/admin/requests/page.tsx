@@ -3,13 +3,17 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/auth-context";
-import { createClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layouts/header";
 import { useToast } from "@/components/ui/use-toast";
 import { Spinner } from "@/components/ui/spinner";
 import { UserPlus, CheckCircle, XCircle, Clock } from "lucide-react";
+import {
+  getPendingAccessRequests,
+  approveAccessRequest,
+  rejectAccessRequest,
+} from "@/lib/supabase/rpc";
 
 interface AccessRequest {
   id: string;
@@ -26,7 +30,6 @@ export default function AdminRequestsPage() {
   const [requests, setRequests] = useState<AccessRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingIds, setProcessingIds] = useState<Set<string>>(new Set());
-  const supabase = createClient();
 
   // Redirect if not admin
   useEffect(() => {
@@ -39,8 +42,7 @@ export default function AdminRequestsPage() {
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      // @ts-expect-error - RPC function types
-      const { data, error } = await supabase.rpc("get_pending_access_requests");
+      const { data, error } = await getPendingAccessRequests();
 
       if (error) {
         console.error("Error fetching requests:", error);
@@ -70,19 +72,13 @@ export default function AdminRequestsPage() {
     setProcessingIds((prev) => new Set(prev).add(requestId));
 
     try {
-      // @ts-expect-error - RPC function types
-      const { data, error } = await supabase.rpc("approve_access_request", {
-        p_request_id: requestId,
-        p_display_name: requestedName,
-      });
+      const { data, error } = await approveAccessRequest(requestId, requestedName);
 
       if (error) {
         throw error;
       }
 
-      const response = data as { success: boolean; message: string };
-
-      if (response.success) {
+      if (data?.success) {
         toast({
           title: "Request Approved",
           description: `${requestedName} has been granted access`,
@@ -93,7 +89,7 @@ export default function AdminRequestsPage() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: response.message || "Failed to approve request",
+          description: data?.message || "Failed to approve request",
         });
       }
     } catch (error) {
@@ -116,18 +112,13 @@ export default function AdminRequestsPage() {
     setProcessingIds((prev) => new Set(prev).add(requestId));
 
     try {
-      // @ts-expect-error - RPC function types
-      const { data, error } = await supabase.rpc("reject_access_request", {
-        p_request_id: requestId,
-      });
+      const { data, error } = await rejectAccessRequest(requestId);
 
       if (error) {
         throw error;
       }
 
-      const response = data as { success: boolean; message: string };
-
-      if (response.success) {
+      if (data?.success) {
         toast({
           title: "Request Rejected",
           description: `Access request from ${requestedName} has been rejected`,
@@ -138,7 +129,7 @@ export default function AdminRequestsPage() {
         toast({
           variant: "destructive",
           title: "Error",
-          description: response.message || "Failed to reject request",
+          description: data?.message || "Failed to reject request",
         });
       }
     } catch (error) {

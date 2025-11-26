@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { requestAccess } from "@/lib/supabase/rpc";
 import { DeviceIdService } from "@/lib/auth/device-id";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,18 +12,10 @@ import { CheckCircle, UserPlus, Clock } from "lucide-react";
 
 type RequestStatus = "idle" | "submitting" | "success" | "pending" | "approved" | "rejected";
 
-interface AccessRequestResponse {
-  success: boolean;
-  message: string;
-  request_id?: string;
-  status?: string;
-}
-
 export function RequestAccess() {
   const [name, setName] = useState("");
   const [status, setStatus] = useState<RequestStatus>("idle");
   const [message, setMessage] = useState("");
-  const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,23 +31,17 @@ export function RequestAccess() {
     try {
       const deviceId = DeviceIdService.getOrCreateDeviceId();
 
-      // @ts-expect-error - RPC function types
-      const { data, error } = await supabase.rpc("submit_access_request", {
-        p_device_id: deviceId,
-        p_requested_name: name.trim(),
-      });
+      const { data, error } = await requestAccess(deviceId, name.trim());
 
       if (error) throw error;
 
-      const response = data as AccessRequestResponse;
-
-      if (response.success) {
+      if (data?.success) {
         setStatus("success");
         setMessage("Your access request has been submitted! An admin will review it soon.");
       } else {
         // Request already exists
         setStatus("pending");
-        setMessage(response.message || "A request from this device already exists.");
+        setMessage(data?.message || "A request from this device already exists.");
       }
     } catch (error) {
       console.error("Error submitting access request:", error);

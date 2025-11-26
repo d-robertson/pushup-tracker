@@ -32,6 +32,8 @@ export function QuickAdd({ todayCount }: QuickAddProps) {
         count,
       });
 
+      if (!result) return;
+
       const newTotal = result.total_count;
       const dailyGoal = 100;
       const remaining = Math.max(0, dailyGoal - newTotal);

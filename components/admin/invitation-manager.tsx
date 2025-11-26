@@ -71,13 +71,12 @@ export function InvitationManager() {
       expiresAt.setDate(expiresAt.getDate() + 7); // 7 days from now
 
       // Insert invitation
-      // @ts-expect-error - Types will be correct after migration
       const { error } = await supabase.from("invitations").insert({
         email,
         invited_by: profile.id,
         token,
         expires_at: expiresAt.toISOString(),
-      });
+      } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       if (error) throw error;
 

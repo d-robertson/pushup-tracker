@@ -269,6 +269,32 @@ export interface Database {
           progress?: number;
         };
       };
+      access_requests: {
+        Row: {
+          id: string;
+          device_id: string;
+          requested_name: string;
+          status: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          device_id: string;
+          requested_name: string;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          device_id?: string;
+          requested_name?: string;
+          status?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
     };
     Views: {
       [_ in never]: never;
@@ -367,6 +393,157 @@ export interface Database {
           month_pushups: number;
           days_active: number;
         }[];
+      };
+      get_pending_access_requests: {
+        Args: Record<string, never>;
+        Returns: {
+          id: string;
+          device_id: string;
+          requested_name: string;
+          status: string;
+          created_at: string;
+        }[];
+      };
+      approve_access_request: {
+        Args: {
+          p_request_id: string;
+          p_display_name?: string | null;
+        };
+        Returns: {
+          success: boolean;
+          message: string;
+        };
+      };
+      reject_access_request: {
+        Args: {
+          p_request_id: string;
+        };
+        Returns: {
+          success: boolean;
+          message: string;
+        };
+      };
+      delete_user: {
+        Args: {
+          p_user_id: string;
+        };
+        Returns: {
+          success: boolean;
+          message: string;
+        };
+      };
+      request_access: {
+        Args: {
+          p_device_id: string;
+          p_requested_name: string;
+        };
+        Returns: {
+          success: boolean;
+          message: string;
+        };
+      };
+      redeem_invitation: {
+        Args: {
+          p_device_id: string;
+          p_device_name: string;
+          p_device_fingerprint: string;
+          p_email: string | null;
+          p_invited_by: string;
+        };
+        Returns: {
+          success: boolean;
+          user_id: string;
+          message: string;
+        };
+      };
+      award_achievement: {
+        Args: {
+          p_user_id: string;
+          p_achievement_id: string;
+        };
+        Returns: {
+          success: boolean;
+          already_earned: boolean;
+          message: string;
+        };
+      };
+      get_user_by_device: {
+        Args: {
+          p_device_id: string;
+        };
+        Returns: {
+          id: string;
+          device_id: string;
+          device_name: string;
+          display_name: string | null;
+          is_admin: boolean;
+        } | null;
+      };
+      get_achievements_with_progress: {
+        Args: {
+          p_user_id: string;
+        };
+        Returns: {
+          achievement_id: string;
+          category: string;
+          name: string;
+          description: string;
+          icon: string;
+          requirement_value: number | null;
+          earned: boolean;
+          earned_at: string | null;
+        }[];
+      };
+      get_user_achievements: {
+        Args: {
+          p_user_id: string;
+        };
+        Returns: {
+          achievement_id: string;
+          category: string;
+          name: string;
+          description: string;
+          icon: string;
+          earned_at: string;
+        }[];
+      };
+      get_latest_progression: {
+        Args: {
+          p_user_id: string;
+        };
+        Returns: {
+          daily_target: number;
+          mode: string;
+          current_total: number;
+          expected_total: number;
+          seven_day_average: number;
+          deficit: number;
+          snapshot_date: string;
+        } | null;
+      };
+      get_progression_history: {
+        Args: {
+          p_user_id: string;
+          p_days: number;
+        };
+        Returns: {
+          snapshot_date: string;
+          daily_target: number;
+          mode: string;
+          current_total: number;
+          expected_total: number;
+          seven_day_average: number;
+          deficit: number;
+        }[];
+      };
+      create_progression_snapshot: {
+        Args: {
+          p_user_id: string;
+          p_snapshot_date: string;
+        };
+        Returns: {
+          success: boolean;
+        };
       };
     };
     Enums: {

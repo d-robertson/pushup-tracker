@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { getUserByDeviceId } from "@/lib/supabase/rpc";
 import { DeviceIdService } from "./device-id";
 
 // Profile type with device fields
@@ -41,27 +42,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const fetchProfileByDeviceId = async (devId: string): Promise<Profile | null> => {
     try {
-      // @ts-expect-error - RPC function types will be properly inferred after migration
-      const { data, error } = await supabase.rpc("get_user_by_device_id", {
-        p_device_id: devId,
-      });
+      const { data, error } = await getUserByDeviceId(devId);
 
       if (error) {
         console.error("Error fetching profile by device ID:", error);
         return null;
       }
 
-      // @ts-expect-error - Types will be correct after migration
       if (!data || data.length === 0) {
         return null;
       }
 
       // Map RPC result to Profile
       const userData = data[0];
+      if (!userData) {
+        return null;
+      }
+
       const { data: fullProfile, error: profileError } = await supabase
         .from("profiles")
         .select("*")
-        // @ts-expect-error - Types will be correct after migration
         .eq("id", userData.user_id)
         .single();
 
@@ -81,7 +81,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       await supabase
         .from("profiles")
-        // @ts-expect-error - Types will be correct after migration
+        // @ts-expect-error - Supabase type inference issue
         .update({ last_seen_at: new Date().toISOString() })
         .eq("id", profileId);
     } catch (error) {
