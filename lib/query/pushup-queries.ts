@@ -8,6 +8,9 @@ export const pushupKeys = {
   stats: (userId: string) => [...pushupKeys.all, "stats", userId] as const,
   history: (userId: string, days?: number) => [...pushupKeys.all, "history", userId, days] as const,
   leaderboard: () => [...pushupKeys.all, "leaderboard"] as const,
+  progression: (userId: string) => [...pushupKeys.all, "progression", userId] as const,
+  progressionHistory: (userId: string, days?: number) =>
+    [...pushupKeys.all, "progression-history", userId, days] as const,
 };
 
 // Hook to get today's pushup count
@@ -151,6 +154,68 @@ export function useAddPushups() {
       queryClient.invalidateQueries({ queryKey: pushupKeys.stats(variables.userId) });
       queryClient.invalidateQueries({ queryKey: pushupKeys.history(variables.userId) });
       queryClient.invalidateQueries({ queryKey: pushupKeys.leaderboard() });
+      queryClient.invalidateQueries({ queryKey: pushupKeys.progression(variables.userId) });
     },
+  });
+}
+
+// Hook to get user's progression data
+export function useProgression(userId: string | undefined) {
+  const supabase = createClient();
+
+  return useQuery({
+    queryKey: pushupKeys.progression(userId || ""),
+    queryFn: async () => {
+      if (!userId) return null;
+
+      // @ts-expect-error - RPC function types
+      const { data, error } = await supabase.rpc("get_latest_progression", {
+        p_user_id: userId,
+      });
+
+      if (error) throw error;
+      return data as {
+        daily_target: number;
+        mode: "standard" | "catchup" | "ahead";
+        current_total: number;
+        expected_total: number;
+        seven_day_average: number;
+        deficit: number;
+        snapshot_date: string;
+      } | null;
+    },
+    enabled: !!userId,
+    // Refetch every 5 minutes to keep progression data fresh
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+// Hook to get progression history for charts
+export function useProgressionHistory(userId: string | undefined, days: number = 30) {
+  const supabase = createClient();
+
+  return useQuery({
+    queryKey: pushupKeys.progressionHistory(userId || "", days),
+    queryFn: async () => {
+      if (!userId) return [];
+
+      // @ts-expect-error - RPC function types
+      const { data, error } = await supabase.rpc("get_progression_history", {
+        p_user_id: userId,
+        p_days: days,
+      });
+
+      if (error) throw error;
+      return (data || []) as Array<{
+        snapshot_date: string;
+        daily_target: number;
+        mode: string;
+        current_total: number;
+        expected_total: number;
+        seven_day_average: number;
+        deficit: number;
+      }>;
+    },
+    enabled: !!userId,
   });
 }

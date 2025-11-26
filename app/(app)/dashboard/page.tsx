@@ -7,6 +7,7 @@ import { QuickAdd } from "@/components/pushups/quick-add";
 import { StatsCards } from "@/components/pushups/stats-cards";
 import { Leaderboard } from "@/components/pushups/leaderboard";
 import { History } from "@/components/pushups/history";
+import { DailyTarget } from "@/components/pushups/daily-target";
 import { BottomNav } from "@/components/navigation/bottom-nav";
 import { useTodaysPushups, useUserStats } from "@/lib/query/pushup-queries";
 
@@ -49,11 +50,12 @@ function DashboardContent() {
         >
           {activeTab === "add" && (
             <div
-              className="container max-w-2xl py-6 px-4"
+              className="container max-w-2xl py-6 px-4 space-y-6"
               style={{
                 animation: "slideIn 0.3s ease-out",
               }}
             >
+              <DailyTarget todayCount={todayCount} />
               <QuickAdd todayCount={todayCount} />
             </div>
           )}
