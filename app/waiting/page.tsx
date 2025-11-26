@@ -57,8 +57,8 @@ export default function WaitingPage() {
             </p>
             <div className="rounded-lg bg-muted p-4 space-y-2">
               <p className="text-xs font-medium">Your Device ID:</p>
-              <p className="text-xs text-muted-foreground font-mono break-all">
-                {deviceId?.substring(0, 48)}...
+              <p className="text-sm text-muted-foreground font-mono break-all select-all">
+                {deviceId}
               </p>
               <p className="text-xs text-muted-foreground">
                 This device will be activated when you accept an invitation.
