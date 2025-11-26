@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate App Icons</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #f5f5f5;
+            padding: 40px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .instructions {
+            background: #f0f9ff;
+            border-left: 4px solid #2563eb;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #2563eb;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        .icons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+        }
+        .icon-card {
+            text-align: center;
+            padding: 30px;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 2px solid #e5e5e5;
+        }
+        .icon-card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .icon-preview {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            display: inline-block;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .icon-preview svg {
+            display: block;
+        }
+        code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        .download-btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .download-btn:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generate App Icons</h1>
+        <p>Your custom pushup tracker icon is ready! Follow the instructions below to generate the PNG files.</p>
+
+        <div class="instructions">
+            <h3>📋 Quick Instructions</h3>
+            <ol>
+                <li>Click the download buttons below to save each icon size</li>
+                <li>Or use an online SVG to PNG converter like <a href="https://cloudconvert.com/svg-to-png" target="_blank">CloudConvert</a></li>
+                <li>Place the files in <code>/public/</code> folder</li>
+            </ol>
+        </div>
+
+        <div class="icons-grid">
+            <div class="icon-card">
+                <h3>512×512 Icon</h3>
+                <div class="icon-preview">
+                    <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="256" cy="256" r="256" fill="url(#gradient512)"/>
+                        <defs>
+                            <linearGradient id="gradient512" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="256" cy="256" r="200" fill="white" opacity="0.15"/>
+                        <text x="256" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="180" font-weight="900" fill="white" text-anchor="middle">100</text>
+                        <g transform="translate(256, 120)">
+                            <circle cx="0" cy="0" r="45" fill="white" opacity="0.9"/>
+                            <path d="M -30 -15 L -30 15 L 30 15 L 30 -15 Z" fill="white" opacity="0.9"/>
+                            <circle cx="-30" cy="0" r="20" fill="white"/>
+                            <circle cx="30" cy="0" r="20" fill="white"/>
+                            <path d="M -55 0 L -50 -5 L -45 0 L -50 5 Z" fill="#fbbf24" opacity="0.9"/>
+                            <path d="M 55 0 L 50 -5 L 45 0 L 50 5 Z" fill="#fbbf24" opacity="0.9"/>
+                        </g>
+                        <circle cx="80" cy="380" r="8" fill="white" opacity="0.6"/>
+                        <circle cx="432" cy="380" r="8" fill="white" opacity="0.6"/>
+                        <circle cx="80" cy="132" r="8" fill="white" opacity="0.6"/>
+                        <circle cx="432" cy="132" r="8" fill="white" opacity="0.6"/>
+                    </svg>
+                </div>
+                <p><code>icon-512.png</code></p>
+                <button class="download-btn" onclick="downloadIcon(512)">Download 512×512</button>
+            </div>
+
+            <div class="icon-card">
+                <h3>192×192 Icon</h3>
+                <div class="icon-preview">
+                    <svg width="192" height="192" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="256" cy="256" r="256" fill="url(#gradient192)"/>
+                        <defs>
+                            <linearGradient id="gradient192" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <circle cx="256" cy="256" r="200" fill="white" opacity="0.15"/>
+                        <text x="256" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="180" font-weight="900" fill="white" text-anchor="middle">100</text>
+                        <g transform="translate(256, 120)">
+                            <circle cx="0" cy="0" r="45" fill="white" opacity="0.9"/>
+                            <path d="M -30 -15 L -30 15 L 30 15 L 30 -15 Z" fill="white" opacity="0.9"/>
+                            <circle cx="-30" cy="0" r="20" fill="white"/>
+                            <circle cx="30" cy="0" r="20" fill="white"/>
+                            <path d="M -55 0 L -50 -5 L -45 0 L -50 5 Z" fill="#fbbf24" opacity="0.9"/>
+                            <path d="M 55 0 L 50 -5 L 45 0 L 50 5 Z" fill="#fbbf24" opacity="0.9"/>
+                        </g>
+                        <circle cx="80" cy="380" r="8" fill="white" opacity="0.6"/>
+                        <circle cx="432" cy="380" r="8" fill="white" opacity="0.6"/>
+                        <circle cx="80" cy="132" r="8" fill="white" opacity="0.6"/>
+                        <circle cx="432" cy="132" r="8" fill="white" opacity="0.6"/>
+                    </svg>
+                </div>
+                <p><code>icon-192.png</code></p>
+                <button class="download-btn" onclick="downloadIcon(192)">Download 192×192</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadIcon(size) {
+            // Create a canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+
+            // Create SVG data
+            const svgData = `
+                <svg width="${size}" height="${size}" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="256" cy="256" r="256" fill="url(#gradient)"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="256" cy="256" r="200" fill="white" opacity="0.15"/>
+                    <text x="256" y="320" font-family="system-ui, -apple-system, sans-serif" font-size="180" font-weight="900" fill="white" text-anchor="middle">100</text>
+                    <g transform="translate(256, 120)">
+                        <circle cx="0" cy="0" r="45" fill="white" opacity="0.9"/>
+                        <path d="M -30 -15 L -30 15 L 30 15 L 30 -15 Z" fill="white" opacity="0.9"/>
+                        <circle cx="-30" cy="0" r="20" fill="white"/>
+                        <circle cx="30" cy="0" r="20" fill="white"/>
+                        <path d="M -55 0 L -50 -5 L -45 0 L -50 5 Z" fill="#fbbf24" opacity="0.9"/>
+                        <path d="M 55 0 L 50 -5 L 45 0 L 50 5 Z" fill="#fbbf24" opacity="0.9"/>
+                    </g>
+                    <circle cx="80" cy="380" r="8" fill="white" opacity="0.6"/>
+                    <circle cx="432" cy="380" r="8" fill="white" opacity="0.6"/>
+                    <circle cx="80" cy="132" r="8" fill="white" opacity="0.6"/>
+                    <circle cx="432" cy="132" r="8" fill="white" opacity="0.6"/>
+                </svg>
+            `;
+
+            // Convert SVG to image
+            const img = new Image();
+            const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(svgBlob);
+
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0, size, size);
+                URL.revokeObjectURL(url);
+
+                // Download
+                canvas.toBlob(function(blob) {
+                    const link = document.createElement('a');
+                    link.download = `icon-${size}.png`;
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                });
+            };
+
+            img.src = url;
+        }
+    </script>
+</body>
+</html>
