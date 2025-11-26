@@ -43,23 +43,15 @@ export class DeviceIdService {
   }
 
   /**
-   * Generate a unique device ID
-   * Uses only Math.random and Date - works everywhere
+   * Generate a unique device ID based on device fingerprint
+   * This ensures the same device always gets the same ID, even if localStorage is cleared
    */
   static generateDeviceId(): string {
     const fingerprint = this.generateFingerprint();
 
-    // Generate random ID using Math.random (works everywhere)
-    const randomId = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-      const r = (Math.random() * 16) | 0;
-      const v = c === "x" ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
-
-    const timestamp = Date.now();
-
-    // Combine fingerprint + random ID + timestamp
-    const deviceId = `device_${fingerprint.substring(0, 16)}_${randomId}_${timestamp}`;
+    // Use the fingerprint hash as the device ID
+    // This makes it deterministic - same device = same ID
+    const deviceId = `device_${fingerprint}`;
 
     return deviceId;
   }
@@ -190,17 +182,22 @@ export class DeviceIdService {
 
   /**
    * Get or create device ID
-   * If device ID exists in localStorage, return it
-   * Otherwise, generate a new one and store it
+   * Always generates based on current device fingerprint
+   * This ensures consistency even if localStorage is cleared
    */
   static getOrCreateDeviceId(): string {
-    let deviceId = this.getDeviceId();
+    // Always generate from current fingerprint
+    const fingerprintBasedId = this.generateDeviceId();
 
-    if (!deviceId) {
-      deviceId = this.generateDeviceId();
-      this.setDeviceId(deviceId);
+    // Store in localStorage for quick access, but we can always regenerate it
+    const storedId = this.getDeviceId();
+
+    // If stored ID doesn't match fingerprint-based ID, update it
+    // This handles migration from old random-based IDs
+    if (storedId !== fingerprintBasedId) {
+      this.setDeviceId(fingerprintBasedId);
     }
 
-    return deviceId;
+    return fingerprintBasedId;
   }
 }
