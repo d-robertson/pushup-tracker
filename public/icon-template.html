@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Template - Screenshot This</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #f0f0f0;
+        }
+        .icon-container {
+            background: #2563eb;
+            width: 512px;
+            height: 512px;
+            border-radius: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .icon-text {
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 200px;
+            font-weight: bold;
+            line-height: 1;
+            margin: 0;
+        }
+        .icon-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 48px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        .instructions {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 300px;
+            font-family: sans-serif;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .instructions h3 {
+            margin: 0 0 10px 0;
+            color: #2563eb;
+        }
+        .instructions ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <h3>Create Icon Instructions:</h3>
+        <ol>
+            <li>Screenshot the blue icon at 512x512</li>
+            <li>Save as <code>icon-512.png</code></li>
+            <li>Resize to 192x192</li>
+            <li>Save as <code>icon-192.png</code></li>
+            <li>Place both in <code>/public/</code></li>
+        </ol>
+    </div>
+
+    <div class="icon-container">
+        <div class="icon-text">💪</div>
+        <div class="icon-subtitle">100</div>
+    </div>
+</body>
+</html>

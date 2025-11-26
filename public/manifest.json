@@ -1,0 +1,47 @@
+{
+  "name": "Pushup Tracker - 36,500 Challenge",
+  "short_name": "Pushup Tracker",
+  "description": "Track your journey to 36,500 pushups in 2026 - 100 pushups per day for 365 days",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["health", "fitness", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Add Pushups",
+      "short_name": "Add",
+      "description": "Quick add pushups",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}
