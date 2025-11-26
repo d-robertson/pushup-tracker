@@ -1,13 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth/auth-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/layouts/header";
 import { RequestAccess } from "@/components/auth/request-access";
 
 export default function Home() {
+  const router = useRouter();
+  const { authenticated, loading } = useAuth();
   const [showRequestForm, setShowRequestForm] = useState(false);
+
+  // Redirect authenticated users to dashboard
+  useEffect(() => {
+    if (!loading && authenticated) {
+      router.push("/dashboard");
+    }
+  }, [authenticated, loading, router]);
+
+  // Show loading state while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+      </div>
+    );
+  }
 
   if (showRequestForm) {
     return (

@@ -75,9 +75,9 @@ export default function InvitePage() {
         setInvitationEmail(invitation.email);
 
         // Step 2: Get device ID and device info
-        const currentDeviceId = deviceId || (await DeviceIdService.getOrCreateDeviceId());
+        const currentDeviceId = deviceId || DeviceIdService.getOrCreateDeviceId();
         const deviceInfo = DeviceIdService.getDeviceInfo();
-        const fingerprint = await DeviceIdService.generateFingerprint();
+        const fingerprint = DeviceIdService.generateFingerprint();
 
         // Step 3: Create device-based user
         setStatus("creating");

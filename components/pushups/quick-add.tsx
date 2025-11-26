@@ -9,6 +9,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { Spinner } from "@/components/ui/spinner";
 import { Plus, TrendingUp } from "lucide-react";
 import { useAddPushups } from "@/lib/query/pushup-queries";
+import { useCheckAchievements } from "@/lib/query/achievement-queries";
+import { showNotification } from "@/lib/notifications/notification-service";
 
 interface QuickAddProps {
   todayCount: number;
@@ -19,6 +21,7 @@ export function QuickAdd({ todayCount }: QuickAddProps) {
   const { profile } = useAuth();
   const { toast } = useToast();
   const addPushupsMutation = useAddPushups();
+  const checkAchievementsMutation = useCheckAchievements();
 
   const addPushups = async (count: number) => {
     if (!profile || count <= 0) return;
@@ -40,6 +43,36 @@ export function QuickAdd({ todayCount }: QuickAddProps) {
             ? `${remaining} more to reach your daily goal!`
             : `Daily goal complete! You're at ${newTotal} today!`,
       });
+
+      // Check for newly unlocked achievements
+      try {
+        const newAchievements = await checkAchievementsMutation.mutateAsync(profile.id);
+
+        // Show notifications for each newly unlocked achievement
+        if (newAchievements.length > 0) {
+          newAchievements.forEach((achievement) => {
+            // Show in-app toast notification
+            toast({
+              title: `🏆 Achievement Unlocked!`,
+              description: `${achievement.icon} ${achievement.name}`,
+              duration: 5000,
+            });
+
+            // Show Web Push notification if enabled
+            showNotification("🏆 Achievement Unlocked!", {
+              body: `${achievement.icon} ${achievement.name}\n${achievement.description}`,
+              icon: "/icon-192x192.png",
+              badge: "/icon-192x192.png",
+              tag: `achievement-${achievement.id}`,
+            }).catch(() => {
+              // Silently fail if notifications aren't enabled
+            });
+          });
+        }
+      } catch (error) {
+        console.error("Error checking achievements:", error);
+        // Don't show error to user - achievements are a nice-to-have
+      }
 
       setCustomAmount("");
     } catch (error) {

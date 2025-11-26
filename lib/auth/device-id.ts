@@ -9,8 +9,9 @@ const DEVICE_FINGERPRINT_KEY = "pushup_tracker_device_fingerprint";
 export class DeviceIdService {
   /**
    * Generate a unique device fingerprint based on browser/device characteristics
+   * Uses only universally available APIs (no crypto)
    */
-  static async generateFingerprint(): Promise<string> {
+  static generateFingerprint(): string {
     const components: string[] = [];
 
     // Screen resolution
@@ -25,8 +26,8 @@ export class DeviceIdService {
     // Platform
     components.push(navigator.platform);
 
-    // User agent
-    components.push(navigator.userAgent);
+    // User agent (shortened for privacy)
+    components.push(navigator.userAgent.substring(0, 100));
 
     // Hardware concurrency (CPU cores)
     components.push(String(navigator.hardwareConcurrency || 0));
@@ -36,59 +37,28 @@ export class DeviceIdService {
       components.push(String((navigator as { deviceMemory?: number }).deviceMemory));
     }
 
-    // Canvas fingerprint
-    try {
-      const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        canvas.width = 200;
-        canvas.height = 50;
-        ctx.textBaseline = "top";
-        ctx.font = "14px 'Arial'";
-        ctx.textBaseline = "alphabetic";
-        ctx.fillStyle = "#f60";
-        ctx.fillRect(125, 1, 62, 20);
-        ctx.fillStyle = "#069";
-        ctx.fillText("Pushup Tracker 💪", 2, 15);
-        ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
-        ctx.fillText("Pushup Tracker 💪", 4, 17);
-        components.push(canvas.toDataURL());
-      }
-    } catch {
-      // Canvas fingerprinting blocked or failed
-      components.push("canvas-blocked");
-    }
-
-    // WebGL fingerprint
-    try {
-      const canvas = document.createElement("canvas");
-      const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-      if (gl && gl instanceof WebGLRenderingContext) {
-        const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
-        if (debugInfo) {
-          components.push(gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL));
-          components.push(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL));
-        }
-      }
-    } catch {
-      // WebGL fingerprinting blocked or failed
-      components.push("webgl-blocked");
-    }
-
-    // Generate hash from all components
-    const fingerprint = await this.hashString(components.join("|||"));
+    // Simple hash of all components
+    const fingerprint = this.simpleHash(components.join("|||"));
     return fingerprint;
   }
 
   /**
    * Generate a unique device ID
+   * Uses only Math.random and Date - works everywhere
    */
-  static async generateDeviceId(): Promise<string> {
-    const fingerprint = await this.generateFingerprint();
-    const randomId = crypto.randomUUID();
+  static generateDeviceId(): string {
+    const fingerprint = this.generateFingerprint();
+
+    // Generate random ID using Math.random (works everywhere)
+    const randomId = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === "x" ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    });
+
     const timestamp = Date.now();
 
-    // Combine fingerprint + random UUID + timestamp
+    // Combine fingerprint + random ID + timestamp
     const deviceId = `device_${fingerprint.substring(0, 16)}_${randomId}_${timestamp}`;
 
     return deviceId;
@@ -111,14 +81,14 @@ export class DeviceIdService {
   /**
    * Store device ID in localStorage
    */
-  static async setDeviceId(id: string): Promise<void> {
+  static setDeviceId(id: string): void {
     if (typeof window === "undefined") return;
 
     try {
       localStorage.setItem(DEVICE_ID_KEY, id);
 
       // Also store fingerprint for validation
-      const fingerprint = await this.generateFingerprint();
+      const fingerprint = this.generateFingerprint();
       localStorage.setItem(DEVICE_FINGERPRINT_KEY, fingerprint);
     } catch (e) {
       console.error("Error storing device ID in localStorage:", e);
@@ -189,7 +159,7 @@ export class DeviceIdService {
    * Validate if current fingerprint matches stored fingerprint
    * Returns true if they match (same device) or if no stored fingerprint exists
    */
-  static async validateFingerprint(): Promise<boolean> {
+  static validateFingerprint(): boolean {
     const storedFingerprint = this.getStoredFingerprint();
 
     if (!storedFingerprint) {
@@ -197,7 +167,7 @@ export class DeviceIdService {
       return true;
     }
 
-    const currentFingerprint = await this.generateFingerprint();
+    const currentFingerprint = this.generateFingerprint();
 
     // Allow some flexibility (first 16 chars must match)
     // This helps with minor browser updates that might change the fingerprint slightly
@@ -205,15 +175,17 @@ export class DeviceIdService {
   }
 
   /**
-   * Hash a string using SHA-256
+   * Simple hash function for fingerprinting
+   * Works everywhere without requiring crypto APIs
    */
-  private static async hashString(str: string): Promise<string> {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(str);
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-    return hashHex;
+  private static simpleHash(str: string): string {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      const char = str.charCodeAt(i);
+      hash = (hash << 5) - hash + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash).toString(16).padStart(16, "0");
   }
 
   /**
@@ -221,12 +193,12 @@ export class DeviceIdService {
    * If device ID exists in localStorage, return it
    * Otherwise, generate a new one and store it
    */
-  static async getOrCreateDeviceId(): Promise<string> {
+  static getOrCreateDeviceId(): string {
     let deviceId = this.getDeviceId();
 
     if (!deviceId) {
-      deviceId = await this.generateDeviceId();
-      await this.setDeviceId(deviceId);
+      deviceId = this.generateDeviceId();
+      this.setDeviceId(deviceId);
     }
 
     return deviceId;

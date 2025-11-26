@@ -1,8 +1,9 @@
 "use client";
 
-import { PlusCircle, BarChart3, Trophy, Calendar } from "lucide-react";
+import { PlusCircle, BarChart3, Trophy, Calendar, Shield } from "lucide-react";
+import { useAuth } from "@/lib/auth/auth-context";
 
-type TabType = "add" | "stats" | "leaderboard" | "history";
+type TabType = "add" | "stats" | "achievements" | "history" | "admin";
 
 interface BottomNavProps {
   activeTab: TabType;
@@ -10,6 +11,8 @@ interface BottomNavProps {
 }
 
 export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
+  const { isAdmin } = useAuth();
+
   return (
     <nav
       style={{
@@ -57,14 +60,14 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
       </button>
 
       <button
-        onClick={() => onTabChange("leaderboard")}
+        onClick={() => onTabChange("achievements")}
         style={{
           flex: 1,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: activeTab === "leaderboard" ? "#dbeafe" : "transparent",
-          color: activeTab === "leaderboard" ? "#2563eb" : "#6b7280",
+          backgroundColor: activeTab === "achievements" ? "#dbeafe" : "transparent",
+          color: activeTab === "achievements" ? "#2563eb" : "#6b7280",
           border: "none",
           cursor: "pointer",
           transition: "all 0.2s ease",
@@ -89,6 +92,25 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
       >
         <Calendar style={{ width: "32px", height: "32px" }} />
       </button>
+
+      {isAdmin && (
+        <button
+          onClick={() => onTabChange("admin")}
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: activeTab === "admin" ? "#dbeafe" : "transparent",
+            color: activeTab === "admin" ? "#2563eb" : "#6b7280",
+            border: "none",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+          }}
+        >
+          <Shield style={{ width: "32px", height: "32px" }} />
+        </button>
+      )}
     </nav>
   );
 }

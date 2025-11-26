@@ -37,7 +37,7 @@ export function RequestAccess() {
     setMessage("");
 
     try {
-      const deviceId = await DeviceIdService.getOrCreateDeviceId();
+      const deviceId = DeviceIdService.getOrCreateDeviceId();
 
       // @ts-expect-error - RPC function types
       const { data, error } = await supabase.rpc("submit_access_request", {

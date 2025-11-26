@@ -103,11 +103,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initializeAuth = async () => {
       try {
         // Get or create device ID
-        const devId = await DeviceIdService.getOrCreateDeviceId();
+        const devId = DeviceIdService.getOrCreateDeviceId();
         setDeviceId(devId);
 
         // Validate fingerprint (ensure device hasn't changed significantly)
-        const isValid = await DeviceIdService.validateFingerprint();
+        const isValid = DeviceIdService.validateFingerprint();
         if (!isValid) {
           console.warn("Device fingerprint has changed significantly");
           // Still continue - we'll handle this in the UI if needed
@@ -121,7 +121,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           await updateLastSeen(fetchedProfile.id);
         } else {
           // Device ID not found in database
-          // User needs to accept invitation or is on admin setup page
+          // User needs to request access
           setProfile(null);
         }
       } catch (error) {

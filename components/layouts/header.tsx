@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 import { useAuth } from "@/lib/auth/auth-context";
-import { Button } from "@/components/ui/button";
 import { User, Settings } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function Header() {
-  const { profile, authenticated, isAdmin } = useAuth();
+  const { profile, authenticated } = useAuth();
 
   // Display name: prefer display_name, fall back to email, then device_name
   const displayName = profile?.display_name || profile?.email || profile?.device_name || "User";
@@ -25,14 +25,11 @@ export function Header() {
                 <User className="h-4 w-4" />
                 <span className="hidden sm:inline">{displayName}</span>
               </div>
-              {isAdmin && (
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/admin">
-                    <Settings className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">Admin</span>
-                  </Link>
-                </Button>
-              )}
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/settings">
+                  <Settings className="h-4 w-4" />
+                </Link>
+              </Button>
             </>
           ) : null}
         </div>

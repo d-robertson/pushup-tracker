@@ -5,13 +5,15 @@ import { ProtectedRoute } from "@/components/auth/protected-route";
 import { useAuth } from "@/lib/auth/auth-context";
 import { QuickAdd } from "@/components/pushups/quick-add";
 import { StatsCards } from "@/components/pushups/stats-cards";
-import { Leaderboard } from "@/components/pushups/leaderboard";
 import { History } from "@/components/pushups/history";
 import { DailyTarget } from "@/components/pushups/daily-target";
 import { BottomNav } from "@/components/navigation/bottom-nav";
+import { AdminPanel } from "@/components/admin/admin-panel";
+import { ProgressionWidget } from "@/components/progression/progression-widget";
+import { AchievementsView } from "@/components/achievements/achievements-view";
 import { useTodaysPushups, useUserStats } from "@/lib/query/pushup-queries";
 
-type TabType = "add" | "stats" | "leaderboard" | "history";
+type TabType = "add" | "stats" | "achievements" | "history" | "admin";
 
 export default function DashboardPage() {
   return (
@@ -28,6 +30,10 @@ function DashboardContent() {
   // Use React Query hooks for data fetching with automatic caching
   const { data: todayCount = 0 } = useTodaysPushups(profile?.id);
   const { data: stats = null, isLoading: loading } = useUserStats(profile?.id);
+
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+  };
 
   return (
     <div>
@@ -56,6 +62,7 @@ function DashboardContent() {
               }}
             >
               <DailyTarget todayCount={todayCount} />
+              {profile?.id && <ProgressionWidget userId={profile.id} />}
               <QuickAdd todayCount={todayCount} />
             </div>
           )}
@@ -75,14 +82,20 @@ function DashboardContent() {
             </div>
           )}
 
-          {activeTab === "leaderboard" && (
+          {activeTab === "achievements" && (
             <div
               className="container max-w-2xl py-6 px-4"
               style={{
                 animation: "slideIn 0.3s ease-out",
               }}
             >
-              <Leaderboard />
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold">Achievements</h2>
+                <p className="text-muted-foreground">
+                  Unlock badges by hitting milestones and maintaining streaks
+                </p>
+              </div>
+              <AchievementsView />
             </div>
           )}
 
@@ -96,10 +109,21 @@ function DashboardContent() {
               <History />
             </div>
           )}
+
+          {activeTab === "admin" && (
+            <div
+              className="container max-w-2xl py-6 px-4"
+              style={{
+                animation: "slideIn 0.3s ease-out",
+              }}
+            >
+              <AdminPanel />
+            </div>
+          )}
         </div>
 
         <div style={{ height: "116px", flexShrink: 0 }}>
-          <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+          <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
         </div>
       </div>
 
