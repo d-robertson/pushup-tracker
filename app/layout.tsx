@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "@/lib/auth/auth-context";
 import { QueryProvider } from "@/lib/query/query-provider";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
+import { VersionChecker } from "@/components/version-checker";
 
 export const metadata: Metadata = {
   title: "Pushup Tracker - 100 Pushups Challenge",
@@ -42,6 +43,7 @@ export default function RootLayout({
         <QueryProvider>
           <AuthProvider>
             <ServiceWorkerRegister />
+            <VersionChecker />
             {children}
             <Toaster />
           </AuthProvider>
