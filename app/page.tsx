@@ -1,16 +1,25 @@
-import Link from "next/link";
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/layouts/header";
+import { RequestAccess } from "@/components/auth/request-access";
 
 export default function Home() {
+  const [showRequestForm, setShowRequestForm] = useState(false);
+
+  if (showRequestForm) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex flex-col items-center justify-center p-8">
+          <RequestAccess />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -26,7 +35,7 @@ export default function Home() {
               <CardTitle>The Challenge</CardTitle>
               <CardDescription>Complete 100 pushups every day for an entire year</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div className="grid gap-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Daily Goal</span>
@@ -41,15 +50,11 @@ export default function Home() {
                   <span className="text-2xl font-bold">36,500 pushups</span>
                 </div>
               </div>
+
+              <Button className="w-full" size="lg" onClick={() => setShowRequestForm(true)}>
+                Request Access
+              </Button>
             </CardContent>
-            <CardFooter className="flex gap-2">
-              <Button className="flex-1" asChild>
-                <Link href="/dashboard">Get Started</Link>
-              </Button>
-              <Button variant="outline" className="flex-1" asChild>
-                <Link href="#features">Learn More</Link>
-              </Button>
-            </CardFooter>
           </Card>
 
           <Card id="features">
