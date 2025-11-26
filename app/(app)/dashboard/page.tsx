@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { useAuth } from "@/lib/auth/auth-context";
-import { createClient } from "@/lib/supabase/client";
 import { QuickAdd } from "@/components/pushups/quick-add";
 import { StatsCards } from "@/components/pushups/stats-cards";
 import { Leaderboard } from "@/components/pushups/leaderboard";
+import { History } from "@/components/pushups/history";
 import { BottomNav } from "@/components/navigation/bottom-nav";
-import { useToast } from "@/components/ui/use-toast";
+import { useTodaysPushups, useUserStats } from "@/lib/query/pushup-queries";
 
-type TabType = "add" | "stats" | "leaderboard";
+type TabType = "add" | "stats" | "leaderboard" | "history";
 
 export default function DashboardPage() {
   return (
@@ -22,62 +22,11 @@ export default function DashboardPage() {
 
 function DashboardContent() {
   const { profile } = useAuth();
-  const { toast } = useToast();
-  const supabase = createClient();
-
   const [activeTab, setActiveTab] = useState<TabType>("add");
-  const [todayCount, setTodayCount] = useState(0);
-  const [stats, setStats] = useState<{
-    total_pushups: number;
-    today_count: number;
-    current_streak: number;
-    longest_streak: number;
-    days_active: number;
-    average_per_day: number;
-  } | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
-    if (!profile) return;
-
-    try {
-      // Fetch today's count
-      // @ts-expect-error - RPC function types
-      const { data: todayData, error: todayError } = await supabase.rpc("get_todays_pushups", {
-        p_user_id: profile.id,
-      });
-
-      if (todayError) throw todayError;
-      setTodayCount(todayData || 0);
-
-      // Fetch stats
-      // @ts-expect-error - RPC function types
-      const { data: statsData, error: statsError } = await supabase.rpc("get_user_pushup_stats", {
-        p_user_id: profile.id,
-      });
-
-      if (statsError) throw statsError;
-      setStats(statsData);
-    } catch (error) {
-      console.error("Error fetching pushup data:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to load pushup data",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, [profile]);
-
-  const handlePushupsAdded = () => {
-    // Refresh data after adding pushups
-    fetchData();
-  };
+  // Use React Query hooks for data fetching with automatic caching
+  const { data: todayCount = 0 } = useTodaysPushups(profile?.id);
+  const { data: stats = null, isLoading: loading } = useUserStats(profile?.id);
 
   return (
     <div>
@@ -105,7 +54,7 @@ function DashboardContent() {
                 animation: "slideIn 0.3s ease-out",
               }}
             >
-              <QuickAdd todayCount={todayCount} onPushupsAdded={handlePushupsAdded} />
+              <QuickAdd todayCount={todayCount} />
             </div>
           )}
 
@@ -132,6 +81,17 @@ function DashboardContent() {
               }}
             >
               <Leaderboard />
+            </div>
+          )}
+
+          {activeTab === "history" && (
+            <div
+              className="container max-w-2xl py-6 px-4"
+              style={{
+                animation: "slideIn 0.3s ease-out",
+              }}
+            >
+              <History />
             </div>
           )}
         </div>

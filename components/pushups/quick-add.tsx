@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/lib/auth/auth-context";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,35 +8,28 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Spinner } from "@/components/ui/spinner";
 import { Plus, TrendingUp } from "lucide-react";
+import { useAddPushups } from "@/lib/query/pushup-queries";
 
 interface QuickAddProps {
   todayCount: number;
-  onPushupsAdded: () => void;
 }
 
-export function QuickAdd({ todayCount, onPushupsAdded }: QuickAddProps) {
+export function QuickAdd({ todayCount }: QuickAddProps) {
   const [customAmount, setCustomAmount] = useState("");
-  const [loading, setLoading] = useState(false);
   const { profile } = useAuth();
   const { toast } = useToast();
-  const supabase = createClient();
+  const addPushupsMutation = useAddPushups();
 
   const addPushups = async (count: number) => {
     if (!profile || count <= 0) return;
 
-    setLoading(true);
-
     try {
-      // @ts-expect-error - RPC function types
-      const { data, error } = await supabase.rpc("add_pushups", {
-        p_user_id: profile.id,
-        p_count: count,
+      const result = await addPushupsMutation.mutateAsync({
+        userId: profile.id,
+        count,
       });
 
-      if (error) throw error;
-
-      // @ts-expect-error - RPC return type
-      const newTotal = data.total_count;
+      const newTotal = result.total_count;
       const dailyGoal = 100;
       const remaining = Math.max(0, dailyGoal - newTotal);
 
@@ -50,7 +42,6 @@ export function QuickAdd({ todayCount, onPushupsAdded }: QuickAddProps) {
       });
 
       setCustomAmount("");
-      onPushupsAdded();
     } catch (error) {
       console.error("Error adding pushups:", error);
       toast({
@@ -58,8 +49,6 @@ export function QuickAdd({ todayCount, onPushupsAdded }: QuickAddProps) {
         title: "Error",
         description: "Failed to add pushups. Please try again.",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -132,7 +121,7 @@ export function QuickAdd({ todayCount, onPushupsAdded }: QuickAddProps) {
                 variant="outline"
                 size="lg"
                 onClick={() => handleQuickAdd(amount)}
-                disabled={loading}
+                disabled={addPushupsMutation.isPending}
                 className="h-16 text-lg font-semibold"
               >
                 +{amount}
@@ -151,11 +140,15 @@ export function QuickAdd({ todayCount, onPushupsAdded }: QuickAddProps) {
               placeholder="Enter amount"
               value={customAmount}
               onChange={(e) => setCustomAmount(e.target.value)}
-              disabled={loading}
+              disabled={addPushupsMutation.isPending}
               className="text-lg"
             />
-            <Button type="submit" disabled={loading || !customAmount} size="lg">
-              {loading ? (
+            <Button
+              type="submit"
+              disabled={addPushupsMutation.isPending || !customAmount}
+              size="lg"
+            >
+              {addPushupsMutation.isPending ? (
                 <Spinner size="sm" />
               ) : (
                 <>

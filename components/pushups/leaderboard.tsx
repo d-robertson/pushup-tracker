@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useState } from "react";
 import { useAuth } from "@/lib/auth/auth-context";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/use-toast";
 import { Spinner } from "@/components/ui/spinner";
 import { Trophy, Flame, TrendingUp, Target, Crown } from "lucide-react";
+import { useLeaderboard } from "@/lib/query/pushup-queries";
 
 interface LeaderboardEntry {
   user_id: string;
@@ -25,34 +24,11 @@ interface LeaderboardEntry {
 type LeaderboardView = "total" | "week" | "today" | "streak";
 
 export function Leaderboard() {
-  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
-  const [loading, setLoading] = useState(true);
   const [view, setView] = useState<LeaderboardView>("total");
   const { profile } = useAuth();
-  const { toast } = useToast();
-  const supabase = createClient();
 
-  useEffect(() => {
-    fetchLeaderboard();
-  }, []);
-
-  const fetchLeaderboard = async () => {
-    try {
-      const { data, error } = await supabase.rpc("get_leaderboard");
-
-      if (error) throw error;
-      setLeaderboardData(data || []);
-    } catch (error) {
-      console.error("Error fetching leaderboard:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to load leaderboard",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Use React Query hook for automatic caching and refetching
+  const { data: leaderboardData = [], isLoading: loading } = useLeaderboard();
 
   const getDisplayName = (entry: LeaderboardEntry) => {
     return entry.display_name || entry.email || entry.device_name || "Unknown User";
