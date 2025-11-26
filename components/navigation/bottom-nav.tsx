@@ -1,9 +1,9 @@
 "use client";
 
-import { PlusCircle, BarChart3, Trophy, Calendar, Shield } from "lucide-react";
+import { PlusCircle, BarChart3, Trophy, Calendar, Shield, Users } from "lucide-react";
 import { useAuth } from "@/lib/auth/auth-context";
 
-type TabType = "add" | "stats" | "achievements" | "history" | "admin";
+type TabType = "add" | "stats" | "achievements" | "leaderboard" | "history" | "admin";
 
 interface BottomNavProps {
   activeTab: TabType;
@@ -74,6 +74,23 @@ export function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
         }}
       >
         <Trophy style={{ width: "32px", height: "32px" }} />
+      </button>
+
+      <button
+        onClick={() => onTabChange("leaderboard")}
+        style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: activeTab === "leaderboard" ? "#dbeafe" : "transparent",
+          color: activeTab === "leaderboard" ? "#2563eb" : "#6b7280",
+          border: "none",
+          cursor: "pointer",
+          transition: "all 0.2s ease",
+        }}
+      >
+        <Users style={{ width: "32px", height: "32px" }} />
       </button>
 
       <button

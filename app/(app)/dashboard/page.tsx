@@ -6,6 +6,7 @@ import { useAuth } from "@/lib/auth/auth-context";
 import { QuickAdd } from "@/components/pushups/quick-add";
 import { StatsCards } from "@/components/pushups/stats-cards";
 import { History } from "@/components/pushups/history";
+import { Leaderboard } from "@/components/pushups/leaderboard";
 import { DailyTarget } from "@/components/pushups/daily-target";
 import { BottomNav } from "@/components/navigation/bottom-nav";
 import { AdminPanel } from "@/components/admin/admin-panel";
@@ -13,7 +14,7 @@ import { ProgressionWidget } from "@/components/progression/progression-widget";
 import { AchievementsView } from "@/components/achievements/achievements-view";
 import { useTodaysPushups, useUserStats } from "@/lib/query/pushup-queries";
 
-type TabType = "add" | "stats" | "achievements" | "history" | "admin";
+type TabType = "add" | "stats" | "achievements" | "leaderboard" | "history" | "admin";
 
 export default function DashboardPage() {
   return (
@@ -96,6 +97,23 @@ function DashboardContent() {
                 </p>
               </div>
               <AchievementsView />
+            </div>
+          )}
+
+          {activeTab === "leaderboard" && (
+            <div
+              className="container max-w-2xl py-6 px-4"
+              style={{
+                animation: "slideIn 0.3s ease-out",
+              }}
+            >
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold">Leaderboard</h2>
+                <p className="text-muted-foreground">
+                  See how you rank against other pushup champions
+                </p>
+              </div>
+              <Leaderboard />
             </div>
           )}
 
